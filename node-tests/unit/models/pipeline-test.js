@@ -6,7 +6,7 @@ var FakeProgressBar   = require('../../helpers/fake-progress-bar');
 
 describe ('Pipeline', function() {
   describe ('initialization', function() {
-    it ('initializes the given list of hooks plus the `didFail`-hook', function() {
+    it('initializes the given list of hooks plus the `didFail`-hook', function() {
       var subject = new Pipeline(['willDeploy', 'didDeploy']);
 
       expect(Object.keys(subject._pipelineHooks).length).to.eq(3);
@@ -14,10 +14,29 @@ describe ('Pipeline', function() {
       expect(subject._pipelineHooks.didDeploy).to.eql([]);
       expect(subject._pipelineHooks.didFail).to.eql([]);
     });
+
+    it('configures logging colors with defaults', function() {
+      var subject = new Pipeline([]);
+      expect(subject.logInfo._styles).to.eql(['blue']);
+      expect(subject.logError._styles).to.eql(['red']);
+    });
+
+    it('configures logging colors', function() {
+      var subject = new Pipeline([], {
+        config: {
+          log: {
+            info: 'green',
+            error: 'yellow'
+          }
+        }
+      });
+      expect(subject.logInfo._styles).to.eql(['green']);
+      expect(subject.logError._styles).to.eql(['yellow']);
+    });
   });
 
   describe ('#register', function() {
-    it ('registers functions for defined hooks', function() {
+    it('registers functions for defined hooks', function() {
       var subject = new Pipeline(['willDeploy'], {
         ui: {write: function() {}}
       });
